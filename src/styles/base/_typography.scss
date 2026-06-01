@@ -62,3 +62,9 @@ a {
 		text-decoration: none;
 	}
 }
+
+a:not([class]) {
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: from-font;
+}

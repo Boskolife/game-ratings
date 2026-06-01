@@ -1,16 +1,16 @@
-## Vite Landing Template (Light)
+## Vite Landing Template (TypeScript)
 
-Starter template for landing pages based on Vite (JavaScript only, no TypeScript) with Handlebars templates, multi-page structure, and automatic WebP image conversion.
+Starter template for landing pages based on Vite with TypeScript, Handlebars templates, multi-page structure, and automatic WebP image conversion.
 
 ### Features
 
-- **Vite + JavaScript**: fast bundling and smooth DX, plain JS/ES modules.
+- **Vite + TypeScript**: fast bundling, type checking, and smooth DX.
 - **Handlebars templates**: partials in `src/templates` and sections in `src/sections` for building pages from reusable blocks.
 - **Multi-page support**: all HTML files in `src` are automatically added as separate entry points.
-- **Automatic WebP conversion**: `sharp`-based script (`scripts/convertToWebp.js`) processes images and generates WebP versions.
+- **Automatic WebP conversion**: `sharp`-based script (`scripts/convertToWebp.ts`) processes images and generates WebP versions.
 - **`picture` helper**: convenient `<picture>` generation with WebP and fallback images directly in Handlebars templates.
 - **ESLint + Prettier**: ready-to-use linting and formatting setup.
-- **GitHub Pages ready**: `base` in `vite.config.js` is configured for deployment.
+- **GitHub Pages ready**: uses relative `base` so it works in any repo path.
 
 ---
 
@@ -62,8 +62,12 @@ npm run preview
 - **`npm run dev`**: start Vite dev server.
 - **`npm run build`**: build the project with Vite into `dist`.
 - **`npm run preview`**: run a local server to preview the built app.
-- **`npm run lint`**: run ESLint for `.js` files.
-- **`npm run webp`**: one-off WebP conversion via `scripts/convertToWebp.js`.
+- **`npm run typecheck`**: run TypeScript compiler without emitting files.
+- **`npm run lint`**: run ESLint.
+- **`npm run lint:fix`**: run ESLint and auto-fix issues where possible.
+- **`npm run format`**: format the project with Prettier.
+- **`npm run format:check`**: check formatting with Prettier (CI-friendly).
+- **`npm run webp`**: one-off WebP conversion via `scripts/convertToWebp.ts`.
 - **`npm run webp:watch`**: watch mode for images, automatically converts on changes.
 
 ---
@@ -79,13 +83,14 @@ Approximate structure (may differ if you added/removed files):
 │  ├─ *.html             # Additional pages (each becomes a separate entry)
 │  ├─ templates/         # Handlebars partials
 │  ├─ sections/          # Page sections / blocks
-│  ├─ assets/            # Static assets (images, fonts, etc.)
-│  └─ scripts / styles   # Your scripts and styles (e.g. SCSS)
+│  ├─ js/                # TypeScript entry (e.g. main.ts)
+│  └─ styles/            # SCSS styles
 ├─ public/               # Public files, copied as-is
 ├─ scripts/
-│  └─ convertToWebp.js   # Image to WebP conversion script
-├─ getHTMLFileNames.js   # Helper for generating HTML entry list
-├─ vite.config.js        # Vite + Handlebars configuration
+│  └─ convertToWebp.ts   # Image to WebP conversion script
+├─ getHTMLFileNames.ts   # Helper for generating HTML entry list
+├─ vite.config.ts        # Vite + Handlebars configuration
+├─ tsconfig.json
 ├─ package.json
 └─ readme.md
 ```
@@ -126,14 +131,13 @@ This will automatically format your code with Prettier on save.
 
 ### Deploying to GitHub Pages
 
-`vite.config.js` already contains:
+`vite.config.ts` uses **`base: './'`**, so the build works from any subpath (including `https://<USERNAME>.github.io/<REPO>/`) without changing config.
 
-- **`base: '/vite-landing-template-light'`**
+If you want to disable automatic WebP conversion (e.g. on CI), set:
 
-If your repository has a different name, change `base` to `/<REPO>/`, where `<REPO>` is your GitHub repository name.
-
-- If you deploy to `https://<USERNAME>.github.io/`, you can keep `base` as `'/'` or remove it.
-- If you deploy to `https://<USERNAME>.github.io/<REPO>/`, make sure to set `base: '/<REPO>'`.
+```sh
+VITE_WEBP_CONVERT=false
+```
 
 Typical deploy flow:
 
@@ -154,4 +158,3 @@ After that, GitHub Pages will serve your landing with the configured `base` path
 MIT
 
 **Free Software, Hell Yeah!**
-

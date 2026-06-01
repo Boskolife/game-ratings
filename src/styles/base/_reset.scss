@@ -21,6 +21,26 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+::selection {
+  background: rgba(11, 95, 255, 0.22);
+}
+
+:focus-visible {
+  outline: $focus-ring-width solid $focus-ring-color;
+  outline-offset: $focus-ring-offset;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
 // adaptive images
 img {
 	max-width: 100%;
