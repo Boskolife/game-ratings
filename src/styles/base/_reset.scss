@@ -16,21 +16,6 @@ html {
 body {
 	color: $base-text-color;
 	background-color: $base-background-color;
-	background-image:
-		linear-gradient(rgba(61, 255, 212, 0.045) 1px, transparent 1px),
-		linear-gradient(90deg, rgba(61, 255, 212, 0.045) 1px, transparent 1px),
-		radial-gradient(
-			1200px 520px at 8% -12%,
-			rgba(61, 255, 212, 0.14),
-			transparent 55%
-		),
-		radial-gradient(
-			900px 420px at 100% 0%,
-			rgba(88, 70, 255, 0.12),
-			transparent 50%
-		);
-	background-size: 44px 44px, 44px 44px, auto, auto;
-	background-attachment: fixed;
 	font: #{$font-size-base}/#{$line-height-base} $base-font-family;
 	min-width: $base-min-width;
 	-webkit-font-smoothing: antialiased;
