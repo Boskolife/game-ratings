@@ -842,7 +842,8 @@ export function initRatings(): void {
     );
     if (input) {
       input.value = suggestion.title;
-      input.classList.toggle('is-filled', suggestion.title.trim().length > 0);
+      input.classList.add('is-filled');
+      input.blur();
     }
 
     setGameCover(gameId, suggestion.bannerUrl);
