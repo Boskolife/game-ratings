@@ -284,7 +284,7 @@ export function initRatings(): void {
     '[data-ratings-table]',
   );
   const status = document.querySelector<HTMLElement>('[data-ratings-status]');
-  const addGameButton = document.querySelector<HTMLButtonElement>(
+  const addGameButtons = document.querySelectorAll<HTMLButtonElement>(
     '[data-action="add-game"]',
   );
   const addPlayerButton = document.querySelector<HTMLButtonElement>(
@@ -316,7 +316,7 @@ export function initRatings(): void {
 
   if (
     !table ||
-    !addGameButton ||
+    addGameButtons.length === 0 ||
     !addPlayerButton ||
     !addPlayerForm ||
     !adminModal ||
@@ -1298,8 +1298,10 @@ export function initRatings(): void {
     }
   }
 
-  addGameButton.addEventListener('click', () => {
-    void addGame();
+  addGameButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      void addGame();
+    });
   });
 
   playerButton.addEventListener('click', () => {

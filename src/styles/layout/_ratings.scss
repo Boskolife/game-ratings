@@ -412,10 +412,17 @@
   color: $color-accent;
 }
 
+.ratings__table-foot {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
 .ratings__table-wrap {
   position: relative;
   max-width: 100%;
   overflow: hidden;
+  margin-bottom: 26px;
   border: 1px solid $color-border;
   background: linear-gradient(
     180deg,
