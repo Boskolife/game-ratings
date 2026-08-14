@@ -1429,7 +1429,11 @@ export function initRatings(): void {
         await maybeImportLegacyBoard();
         setStatus(`Column unlocked: ${next.name}.`);
       } catch {
-        setPinError('Could not check the PIN. Try again.');
+        setPinError(
+          isSupabaseConfigured()
+            ? 'Could not check the PIN. Try again.'
+            : 'This deploy is missing Supabase keys.',
+        );
       }
     })();
   });
