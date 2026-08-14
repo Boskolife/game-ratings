@@ -10,7 +10,7 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
-  will-change: transform;
+  will-change: transform, opacity;
 }
 
 .site-bg__glow--a {
@@ -19,7 +19,9 @@
   top: -12%;
   left: -10%;
   background: rgba($color-accent, 0.28);
-  animation: site-bg-drift-a 22s ease-in-out infinite alternate;
+  animation:
+    site-bg-wander-a 32s ease-in-out infinite,
+    site-bg-pulse 5.5s ease-in-out infinite;
 }
 
 .site-bg__glow--b {
@@ -28,7 +30,9 @@
   top: -8%;
   right: -12%;
   background: rgba(88, 70, 255, 0.26);
-  animation: site-bg-drift-b 28s ease-in-out infinite alternate;
+  animation:
+    site-bg-wander-b 38s ease-in-out infinite,
+    site-bg-pulse 7s ease-in-out infinite 0.8s;
 }
 
 .site-bg__glow--c {
@@ -37,7 +41,9 @@
   right: 18%;
   bottom: -8%;
   background: rgba(61, 180, 255, 0.18);
-  animation: site-bg-drift-c 26s ease-in-out infinite alternate;
+  animation:
+    site-bg-wander-c 34s ease-in-out infinite,
+    site-bg-pulse 6.2s ease-in-out infinite 1.4s;
 }
 
 .site-bg__grid {
@@ -102,33 +108,84 @@
   z-index: 1;
 }
 
-@keyframes site-bg-drift-a {
+@keyframes site-bg-wander-a {
   0% {
     transform: translate(0, 0) scale(1);
   }
 
+  20% {
+    transform: translate(58vw, 10vh) scale(1.12);
+  }
+
+  40% {
+    transform: translate(46vw, 64vh) scale(0.9);
+  }
+
+  60% {
+    transform: translate(6vw, 72vh) scale(1.16);
+  }
+
+  80% {
+    transform: translate(24vw, 28vh) scale(1.04);
+  }
+
   100% {
-    transform: translate(12vw, 8vh) scale(1.18);
+    transform: translate(0, 0) scale(1);
   }
 }
 
-@keyframes site-bg-drift-b {
+@keyframes site-bg-wander-b {
   0% {
     transform: translate(0, 0) scale(1);
   }
 
+  25% {
+    transform: translate(-68vw, 16vh) scale(1.14);
+  }
+
+  50% {
+    transform: translate(-42vw, 66vh) scale(0.88);
+  }
+
+  75% {
+    transform: translate(-14vw, 38vh) scale(1.1);
+  }
+
   100% {
-    transform: translate(-10vw, 10vh) scale(1.12);
+    transform: translate(0, 0) scale(1);
   }
 }
 
-@keyframes site-bg-drift-c {
+@keyframes site-bg-wander-c {
   0% {
     transform: translate(0, 0) scale(1);
   }
 
+  25% {
+    transform: translate(-38vw, -52vh) scale(1.16);
+  }
+
+  50% {
+    transform: translate(12vw, -68vh) scale(0.9);
+  }
+
+  75% {
+    transform: translate(-8vw, -22vh) scale(1.08);
+  }
+
   100% {
-    transform: translate(8vw, -7vh) scale(1.2);
+    transform: translate(0, 0) scale(1);
+  }
+}
+
+@keyframes site-bg-pulse {
+  0%,
+  100% {
+    opacity: 0.48;
+  }
+
+  50% {
+    opacity: 1;
   }
 }
 
