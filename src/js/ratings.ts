@@ -346,7 +346,15 @@ export function initRatings(): void {
       role: 'listbox',
     },
   });
-  document.body.append(suggestRoot);
+  const notice = el('p', {
+    className: 'ratings__notice',
+    attrs: {
+      role: 'status',
+      'aria-live': 'polite',
+    },
+  });
+  document.body.append(suggestRoot, notice);
+  let noticeTimer = 0;
 
   let board: Board = { raters: [], games: [] };
   let session: PlayerSession | null = null;
@@ -365,8 +373,42 @@ export function initRatings(): void {
     }
   }
 
+  function notifyDuplicate(title?: string): void {
+    const name = title?.trim() || 'This game';
+    const message = `${name} is already on the list.`;
+
+    setStatus(message);
+    notice.textContent = message;
+    notice.classList.add('is-visible');
+
+    if (noticeTimer) {
+      window.clearTimeout(noticeTimer);
+    }
+
+    noticeTimer = window.setTimeout(() => {
+      notice.classList.remove('is-visible');
+      noticeTimer = 0;
+    }, 3600);
+  }
+
   function findGame(gameId: string): Game | undefined {
     return board.games.find((game) => game.id === gameId);
+  }
+
+  function normalizeGameTitle(title: string): string {
+    return title.trim().toLowerCase();
+  }
+
+  function isDuplicateTitle(title: string, gameId: string): boolean {
+    const normalized = normalizeGameTitle(title);
+    if (!normalized) {
+      return false;
+    }
+
+    return board.games.some(
+      (game) =>
+        game.id !== gameId && normalizeGameTitle(game.title) === normalized,
+    );
   }
 
   function findRater(raterId: string): Rater | undefined {
@@ -833,6 +875,12 @@ export function initRatings(): void {
       return;
     }
 
+    if (isDuplicateTitle(suggestion.title, gameId)) {
+      hideSuggest();
+      notifyDuplicate(suggestion.title);
+      return;
+    }
+
     skipSuggest = true;
     game.title = suggestion.title;
     game.bannerUrl = suggestion.bannerUrl;
@@ -857,17 +905,27 @@ export function initRatings(): void {
     gameId: string,
     items: GameSuggestion[],
   ): void {
+    const available = items.filter(
+      (item) => !isDuplicateTitle(item.title, gameId),
+    );
+
     suggestGameId = gameId;
-    suggestItems = items;
-    suggestIndex = items.length ? 0 : -1;
+    suggestItems = available;
+    suggestIndex = available.length ? 0 : -1;
     suggestRoot.replaceChildren();
 
-    if (!items.length) {
-      showSuggestMessage(input, gameId, 'No matches. Keep typing or use a custom title.');
+    if (!available.length) {
+      showSuggestMessage(
+        input,
+        gameId,
+        items.length
+          ? 'This game is already on the list.'
+          : 'No matches. Keep typing or use a custom title.',
+      );
       return;
     }
 
-    items.forEach((item, index) => {
+    available.forEach((item, index) => {
       const option = el('li', { attrs: { role: 'none' } });
       const button = el('button', {
         className:
@@ -1187,9 +1245,28 @@ export function initRatings(): void {
       return;
     }
 
+    if (isDuplicateTitle(title, gameId)) {
+      notifyDuplicate(title);
+      board = await loadBoard();
+      render();
+      return;
+    }
+
     try {
       await updateGame(session.sessionToken, gameId, title, bannerUrl);
-    } catch {
+    } catch (error) {
+      const message =
+        error && typeof error === 'object' && 'message' in error
+          ? String((error as { message: unknown }).message)
+          : '';
+
+      if (message.includes('Game already exists')) {
+        notifyDuplicate(title);
+        board = await loadBoard();
+        render();
+        return;
+      }
+
       setStatus('Could not save the game title.');
     }
   }

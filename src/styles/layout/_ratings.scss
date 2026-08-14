@@ -858,3 +858,38 @@
 .ratings__table tbody tr:hover .ratings__game {
   background: mix($color-accent, $color-surface, 6%);
 }
+
+.ratings__notice {
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 80;
+  width: min(28rem, calc(100% - 2rem));
+  margin: 0;
+  padding: 0.9rem 1.15rem;
+  border: 1px solid $color-border-strong;
+  background: rgba($color-surface, 0.96);
+  box-shadow: 0 0 28px rgba($color-accent, 0.18);
+  color: $color-text;
+  font-family: $font-display;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translate(-50%, 0.8rem);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    visibility 0.25s ease;
+
+  &.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+}
