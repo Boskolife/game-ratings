@@ -1,0 +1,194 @@
+<section class="ratings" id="ratings" aria-labelledby="ratings-title">
+  <div class="container">
+    <div class="ratings__gate" data-pin-gate>
+      <button
+        class="ratings__gate-backdrop"
+        type="button"
+        data-action="close-pin"
+        aria-label="Cancel switch"
+      ></button>
+      <form class="ratings__gate-card" data-form="pin">
+        <header class="ratings__gate-head">
+          <div>
+            <p class="ratings__kicker">Access // Identity</p>
+            <h2 class="ratings__gate-title">Enter your PIN</h2>
+          </div>
+          <button
+            class="ratings__icon-btn ratings__gate-close"
+            type="button"
+            data-action="close-pin"
+            aria-label="Cancel switch"
+          >
+            ×
+          </button>
+        </header>
+        <p class="ratings__gate-text" data-pin-text>
+          Unlock your column to add scores. Other players’ ratings stay
+          locked.
+        </p>
+        <label class="ratings__gate-field">
+          <span class="visually-hidden">PIN code</span>
+          <input
+            type="password"
+            name="pin"
+            inputmode="numeric"
+            maxlength="4"
+            pattern="[0-9]{4}"
+            placeholder="PIN"
+            autocomplete="off"
+            required
+          />
+        </label>
+        <div class="ratings__gate-actions">
+          <button class="ratings__btn ratings__btn--primary" type="submit">
+            Unlock
+          </button>
+          <button
+            class="ratings__btn ratings__btn--ghost ratings__gate-cancel"
+            type="button"
+            data-action="close-pin"
+          >
+            Cancel
+          </button>
+        </div>
+        <p class="ratings__gate-error" data-pin-error role="alert"></p>
+      </form>
+    </div>
+
+    <div class="ratings__board is-locked" data-ratings-board>
+      <header class="ratings__intro">
+        <p class="ratings__kicker">Signal // Scoreboard</p>
+        <h1 class="ratings__title" id="ratings-title">Game Ratings</h1>
+        <p class="ratings__text">
+          Add a game row for the board. Scores stay in your column and
+          sync for everyone.
+        </p>
+      </header>
+
+      <div class="ratings__toolbar">
+        <button
+          class="ratings__btn ratings__btn--primary"
+          type="button"
+          data-action="add-game"
+        >
+          Add game
+        </button>
+
+        <button
+          class="ratings__btn"
+          type="button"
+          data-action="manage-players"
+          hidden
+        >
+          Players
+        </button>
+
+        <p class="ratings__identity" data-player-label></p>
+
+        <button
+          class="ratings__btn ratings__btn--ghost"
+          type="button"
+          data-action="switch-player"
+        >
+          Switch player
+        </button>
+
+        <button
+          class="ratings__btn ratings__btn--ghost"
+          type="button"
+          data-action="share"
+        >
+          Share table
+        </button>
+      </div>
+
+      <p
+        class="ratings__status"
+        data-ratings-status
+        role="status"
+        aria-live="polite"
+      ></p>
+
+      <div class="ratings__table-wrap">
+        <div class="ratings__table-scroll">
+          <table class="ratings__table" data-ratings-table></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="ratings__modal" data-admin-modal hidden>
+      <button
+        class="ratings__modal-backdrop"
+        type="button"
+        data-action="close-admin"
+        aria-label="Close admin panel"
+      ></button>
+      <div
+        class="ratings__modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="admin-players-title"
+      >
+        <header class="ratings__modal-head">
+          <div>
+            <p class="ratings__kicker">Admin // Roster</p>
+            <h2 class="ratings__modal-title" id="admin-players-title">
+              Manage players
+            </h2>
+          </div>
+          <button
+            class="ratings__icon-btn"
+            type="button"
+            data-action="close-admin"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </header>
+
+        <div class="ratings__admin-list" data-admin-players></div>
+
+        <form class="ratings__player-form" data-form="add-player">
+          <p class="ratings__admin-label">Add player</p>
+          <label class="ratings__player-field">
+            <span class="visually-hidden">Player name</span>
+            <input
+              type="text"
+              name="name"
+              maxlength="40"
+              placeholder="Player name"
+              autocomplete="off"
+              required
+            />
+          </label>
+          <div class="ratings__player-field ratings__player-field--pin">
+            <label>
+              <span class="visually-hidden">PIN code</span>
+              <input
+                type="password"
+                name="pin"
+                inputmode="numeric"
+                maxlength="4"
+                pattern="[0-9]{4}"
+                placeholder="PIN"
+                autocomplete="off"
+                required
+              />
+            </label>
+            <button
+              class="ratings__icon-btn ratings__pin-generate"
+              type="button"
+              data-action="generate-pin"
+              title="Generate PIN"
+              aria-label="Generate PIN"
+            ></button>
+          </div>
+          <button class="ratings__btn ratings__btn--primary" type="submit">
+            Create
+          </button>
+        </form>
+        <p class="ratings__player-error" data-player-error role="alert"></p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,3 +1,5 @@
+import { initRatings } from './ratings';
+
 function init(): void {
   document.documentElement.classList.add('js');
 
@@ -5,6 +7,8 @@ function init(): void {
   document.querySelectorAll<HTMLElement>('[data-year]').forEach((el) => {
     el.textContent = year;
   });
+
+  initRatings();
 }
 
 if (document.readyState === 'loading') {
@@ -12,4 +16,3 @@ if (document.readyState === 'loading') {
 } else {
   init();
 }
-

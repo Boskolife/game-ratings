@@ -1,5 +1,15 @@
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#main-content {
+  flex: 1 0 auto;
+}
+
 .container {
-  width: min(1120px, calc(100% - 3rem));
+  width: min(1380px, calc(100% - 3rem));
   margin-inline: auto;
 }
 
@@ -28,11 +38,13 @@
 .skip-link {
   display: inline-block;
   padding: 0.75rem 1rem;
-  background: $color-dark-surface;
+  background: $color-accent;
   color: $color-on-dark;
+  font-family: $font-display;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   text-decoration: none;
-  border-radius: 0.25rem;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+  border-radius: 2px;
 }
 
 .section {

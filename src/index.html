@@ -4,10 +4,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vite Template</title>
+  <title>Game Ratings</title>
   <meta
     name="description"
-    content="Starter template for landing pages built with Vite and Handlebars."
+    content="A game ratings table: add games, score them in your column, and share the board with friends."
+  />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="./favicon-32.png" type="image/png" sizes="32x32" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+  <meta name="theme-color" content="#070b14" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@500;600;700&display=swap"
+    rel="stylesheet"
   />
   <link rel="stylesheet" href="/styles/main.scss" />
 </head>
@@ -16,9 +26,7 @@
   <a class="skip-link visually-hidden" href="#main-content">Skip to content</a>
   {{> header }}
   <main id="main-content" tabindex="-1">
-    {{> section-hero }}
-    {{> section-features }}
-    {{> section-cta }}
+    {{> section-ratings }}
   </main>
   {{> footer }}
   <script type="module" src="/js/main.ts"></script>
