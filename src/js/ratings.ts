@@ -313,6 +313,9 @@ export function initRatings(): void {
   const playerLabel = document.querySelector<HTMLElement>(
     '[data-player-label]',
   );
+  const listSearch = document.querySelector<HTMLInputElement>(
+    '[data-list-search]',
+  );
 
   if (
     !table ||
@@ -325,7 +328,8 @@ export function initRatings(): void {
     !switchButton ||
     !pinGate ||
     !pinForm ||
-    !boardView
+    !boardView ||
+    !listSearch
   ) {
     return;
   }
@@ -358,6 +362,7 @@ export function initRatings(): void {
 
   let board: Board = { raters: [], games: [] };
   let session: PlayerSession | null = null;
+  let listQuery = '';
   let refreshing = false;
   let refreshQueued = false;
   let suggestGameId: string | null = null;
@@ -408,6 +413,17 @@ export function initRatings(): void {
     return board.games.some(
       (game) =>
         game.id !== gameId && normalizeGameTitle(game.title) === normalized,
+    );
+  }
+
+  function visibleGames(): Game[] {
+    const query = listQuery.trim().toLowerCase();
+    if (!query) {
+      return board.games;
+    }
+
+    return board.games.filter((game) =>
+      game.title.toLowerCase().includes(query),
     );
   }
 
@@ -1085,6 +1101,7 @@ export function initRatings(): void {
     thead.append(headerRow);
 
     const tbody = el('tbody');
+    const games = visibleGames();
 
     if (!board.games.length) {
       const emptyRow = el('tr');
@@ -1097,9 +1114,20 @@ export function initRatings(): void {
       });
       emptyRow.append(emptyCell);
       tbody.append(emptyRow);
+    } else if (!games.length) {
+      const emptyRow = el('tr');
+      const emptyCell = el('td', {
+        className: 'ratings__empty',
+        text: 'No games match this search.',
+        attrs: {
+          colspan: String(board.raters.length + (isAdmin() ? 2 : 1)),
+        },
+      });
+      emptyRow.append(emptyCell);
+      tbody.append(emptyRow);
     }
 
-    board.games.forEach((game) => {
+    games.forEach((game) => {
       const row = el('tr', { attrs: { 'data-game-row': game.id } });
       const titleCell = el('th', {
         className: 'ratings__game',
@@ -1379,6 +1407,24 @@ export function initRatings(): void {
     button.addEventListener('click', () => {
       void addGame();
     });
+  });
+
+  listSearch.addEventListener('input', () => {
+    listQuery = listSearch.value;
+    render();
+    listSearch.focus();
+  });
+
+  listSearch.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !listQuery) {
+      return;
+    }
+
+    event.preventDefault();
+    listQuery = '';
+    listSearch.value = '';
+    render();
+    listSearch.focus();
   });
 
   playerButton.addEventListener('click', () => {
