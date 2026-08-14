@@ -38,8 +38,13 @@ function sanitizeScoreInput(raw: string): string {
         if (fraction.length === 0) {
           fraction = char;
         }
-      } else {
-        integer += char;
+      } else if (!integer) {
+        integer = char;
+      } else if (integer === '1' && char === '0') {
+        integer = '10';
+      } else if (integer.length === 1) {
+        seenDot = true;
+        fraction = char;
       }
     } else if (char === '.' && !seenDot) {
       seenDot = true;
@@ -1266,43 +1271,29 @@ export function initRatings(): void {
       if (!canEditColumn(raterId)) {
         return;
       }
-      const game = findGame(gameId);
-      if (!game) {
-        return;
-      }
 
       if (!target.value.trim()) {
-        game.ratings[raterId] = null;
         target.className = scoreClass(null);
-        void persistScore(gameId, raterId, null);
         return;
       }
 
       const sanitized = sanitizeScoreInput(target.value);
       if (target.value !== sanitized) {
-        const cursor = target.selectionStart;
+        const hadDot = target.value.replace(/,/g, '.').includes('.');
         target.value = sanitized;
-        if (cursor !== null) {
-          const nextCursor = Math.min(cursor, sanitized.length);
-          target.setSelectionRange(nextCursor, nextCursor);
+        if (!hadDot && sanitized.includes('.')) {
+          const end = sanitized.length;
+          target.setSelectionRange(end, end);
         }
       }
 
-      if (!sanitized) {
-        game.ratings[raterId] = null;
+      if (!sanitized || sanitized.endsWith('.')) {
         target.className = scoreClass(null);
-        void persistScore(gameId, raterId, null);
         return;
       }
 
       const score = parseScore(sanitized);
-      if (score === null) {
-        return;
-      }
-
-      game.ratings[raterId] = score;
       target.className = scoreClass(score);
-      void persistScore(gameId, raterId, score);
     }
   }
 
@@ -1634,7 +1625,7 @@ export function initRatings(): void {
     const active = document.activeElement;
     if (
       active instanceof HTMLInputElement &&
-      active.dataset.field === 'title'
+      (active.dataset.field === 'title' || active.dataset.field === 'score')
     ) {
       return;
     }
