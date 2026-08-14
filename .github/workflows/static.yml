@@ -43,14 +43,8 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
-            unset VITE_SUPABASE_URL VITE_SUPABASE_ANON_KEY
-          fi
-          if [ -z "$VITE_SUPABASE_URL" ] || [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
-            if [ ! -f .env.production ]; then
-              echo "Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY."
-              echo "Add GitHub Actions secrets or commit a .env.production file."
-              exit 1
-            fi
+            echo "Missing GitHub Actions secrets: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY."
+            exit 1
           fi
           npm run build
       
