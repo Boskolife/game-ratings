@@ -429,13 +429,24 @@ export function initRatings(): void {
 
   function visibleGames(): Game[] {
     const query = listQuery.trim().toLowerCase();
-    if (!query) {
-      return board.games;
-    }
+    const games = query
+      ? board.games.filter((game) => game.title.toLowerCase().includes(query))
+      : board.games.slice();
 
-    return board.games.filter((game) =>
-      game.title.toLowerCase().includes(query),
-    );
+    return games.sort((left, right) => {
+      const a = left.title.trim();
+      const b = right.title.trim();
+      if (!a && !b) {
+        return 0;
+      }
+      if (!a) {
+        return -1;
+      }
+      if (!b) {
+        return 1;
+      }
+      return a.localeCompare(b, undefined, { sensitivity: 'base' });
+    });
   }
 
   function findRater(raterId: string): Rater | undefined {
