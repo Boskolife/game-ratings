@@ -635,39 +635,16 @@
   }
 }
 
-.ratings__title-input {
-  width: 100%;
-  border: 1px solid $color-border;
-  border-radius: 2px;
-  background: transparent;
+.ratings__title-text {
+  margin: 0;
+  padding: 0.4rem 0;
   color: inherit;
   font: inherit;
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: 0.02em;
-  text-transform: none;
-  transition: $animation-speed;
-  padding: 0.4rem 0.5rem;
   text-align: center;
-
-  &:hover,
-  &:focus {
-    border-color: $color-accent;
-    background: rgba($color-accent, 0.08);
-    box-shadow: 0 0 0 1px rgba($color-accent, 0.25);
-  }
-
-  &.is-filled:not(:focus) {
-    border-color: transparent;
-    background: transparent;
-    box-shadow: none;
-    padding: 0;
-
-    &:hover {
-      border-color: transparent;
-      background: transparent;
-    }
-  }
+  text-transform: none;
 }
 
 .ratings__game-pick {
@@ -686,13 +663,7 @@
   background: $color-bg;
 
   &.is-empty {
-    border-style: dashed;
-    border-color: $color-border;
-    background: linear-gradient(
-      135deg,
-      rgba($color-accent, 0.08),
-      transparent 62%
-    );
+    display: none;
   }
 }
 
@@ -701,6 +672,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.ratings__title-input {
+  width: 100%;
+  padding: 10px;
 }
 
 .ratings__suggest {

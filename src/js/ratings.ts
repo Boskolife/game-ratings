@@ -206,6 +206,16 @@ function el<K extends keyof HTMLElementTagNameMap>(
   return node;
 }
 
+function createTitleText(game: Game): HTMLParagraphElement {
+  return el('p', {
+    className: 'ratings__title-text',
+    text: game.title,
+    attrs: {
+      'data-game': game.id,
+    },
+  });
+}
+
 function createScoreInput(
   game: Game,
   rater: Rater,
@@ -371,6 +381,7 @@ export function initRatings(): void {
   let suggestTimer = 0;
   let suggestAbort: AbortController | null = null;
   let skipSuggest = false;
+  let skipTitlePersist = false;
 
   function setStatus(message: string): void {
     if (status) {
@@ -897,7 +908,7 @@ export function initRatings(): void {
       return;
     }
 
-    skipSuggest = true;
+    skipTitlePersist = true;
     game.title = suggestion.title;
     game.bannerUrl = suggestion.bannerUrl;
 
@@ -906,13 +917,14 @@ export function initRatings(): void {
     );
     if (input) {
       input.value = suggestion.title;
-      input.classList.add('is-filled');
-      input.blur();
     }
 
-    setGameCover(gameId, suggestion.bannerUrl);
     hideSuggest();
-    void persistGame(gameId, suggestion.title, suggestion.bannerUrl);
+    void persistGame(gameId, suggestion.title, suggestion.bannerUrl).finally(
+      () => {
+        skipTitlePersist = false;
+      },
+    );
     setStatus(`Selected ${suggestion.title}.`);
   }
 
@@ -1152,22 +1164,22 @@ export function initRatings(): void {
       }
       picker.append(
         coverFrame,
-        el('input', {
-          className: game.title.trim()
-            ? 'ratings__title-input is-filled'
-            : 'ratings__title-input',
-          attrs: {
-            type: 'text',
-            value: game.title,
-            maxlength: '80',
-            placeholder: 'Search game',
-            'data-field': 'title',
-            'data-game': game.id,
-            'aria-label': 'Game title',
-            'aria-autocomplete': 'list',
-            autocomplete: 'off',
-          },
-        }),
+        game.title.trim()
+          ? createTitleText(game)
+          : el('input', {
+              className: 'ratings__title-input',
+              attrs: {
+                type: 'text',
+                value: game.title,
+                maxlength: '80',
+                placeholder: 'Search game',
+                'data-field': 'title',
+                'data-game': game.id,
+                'aria-label': 'Game title',
+                'aria-autocomplete': 'list',
+                autocomplete: 'off',
+              },
+            }),
       );
       titleCell.append(picker);
       row.append(titleCell);
@@ -1282,6 +1294,17 @@ export function initRatings(): void {
 
     try {
       await updateGame(session.sessionToken, gameId, title, bannerUrl);
+      const game = findGame(gameId);
+      if (game) {
+        game.title = title.trim();
+        if (bannerUrl !== undefined) {
+          game.bannerUrl = bannerUrl;
+        }
+      }
+
+      if (title.trim()) {
+        render();
+      }
     } catch (error) {
       const message =
         error && typeof error === 'object' && 'message' in error
@@ -1618,6 +1641,11 @@ export function initRatings(): void {
           hideSuggest();
         }
       }, 120);
+
+      if (skipTitlePersist) {
+        return;
+      }
+
       void persistGame(target.dataset.game, target.value);
     }
   });
