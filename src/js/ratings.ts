@@ -453,12 +453,28 @@ export function initRatings(): void {
     return board.raters.find((rater) => rater.id === raterId);
   }
 
+  function canMutate(): boolean {
+    return session !== null && !session.isGuest;
+  }
+
   function canEditColumn(raterId: string): boolean {
-    return session?.id === raterId;
+    return canMutate() && session?.id === raterId;
   }
 
   function isAdmin(): boolean {
     return session?.isAdmin === true;
+  }
+
+  function isGuest(): boolean {
+    return session?.isGuest === true;
+  }
+
+  function sessionStatus(next: PlayerSession): string {
+    if (next.isGuest) {
+      return 'Viewing as Guest. The table is read-only.';
+    }
+
+    return `Column unlocked: ${next.name}.`;
   }
 
   function setPlayerError(message: string): void {
@@ -582,6 +598,15 @@ export function initRatings(): void {
     setPlayerError('');
     renderAdminPlayers();
     playersModal.hidden = false;
+  }
+
+  function syncSessionControls(): void {
+    const guest = isGuest();
+    addGameButtons.forEach((button) => {
+      button.hidden = guest;
+    });
+    accessBoard.classList.toggle('is-guest', guest);
+    syncAdminControls();
   }
 
   function syncAdminControls(): void {
@@ -777,7 +802,7 @@ export function initRatings(): void {
 
   const pinText = accessGate.querySelector<HTMLElement>('[data-pin-text]');
   const pinCopy =
-    'Unlock your column to add scores. Other players’ ratings stay locked.';
+    'Unlock your column to add scores, or use the guest PIN to view the table. Other players’ ratings stay locked.';
   const switchPinCopy =
     'Enter another PIN to switch columns. Close to stay signed in.';
   let pinGateDismissible = false;
@@ -821,7 +846,7 @@ export function initRatings(): void {
     }
 
     hideGate();
-    setStatus(`Signed in as ${session.name}.`);
+    setStatus(session.isGuest ? sessionStatus(session) : `Signed in as ${session.name}.`);
   }
 
   function applySession(next: PlayerSession): void {
@@ -829,9 +854,11 @@ export function initRatings(): void {
     saveSessionToken(next.sessionToken);
     hideGate();
     if (playerLabel) {
-      playerLabel.textContent = `Signed in as ${next.name}`;
+      playerLabel.textContent = next.isGuest
+        ? 'Viewing as Guest'
+        : `Signed in as ${next.name}`;
     }
-    syncAdminControls();
+    syncSessionControls();
   }
 
   function lockSession(): void {
@@ -840,10 +867,10 @@ export function initRatings(): void {
     if (playerLabel) {
       playerLabel.textContent = '';
     }
-    syncAdminControls();
+    syncSessionControls();
     showGate();
     render();
-    setStatus('Enter your PIN to edit your column.');
+    setStatus('Enter your PIN to edit your column, or the guest PIN to view.');
   }
 
   function syncTableScroll(): void {
@@ -1091,7 +1118,7 @@ export function initRatings(): void {
 
   function render(): void {
     hideSuggest();
-    syncAdminControls();
+    syncSessionControls();
 
     const caption = el('caption', {
       className: 'visually-hidden',
@@ -1147,7 +1174,9 @@ export function initRatings(): void {
       const emptyRow = el('tr');
       const emptyCell = el('td', {
         className: 'ratings__empty',
-        text: 'No games yet. Click “Add game” to create a row.',
+        text: isGuest()
+          ? 'No games yet.'
+          : 'No games yet. Click “Add game” to create a row.',
         attrs: {
           colspan: String(board.raters.length + (isAdmin() ? 2 : 1)),
         },
@@ -1192,9 +1221,8 @@ export function initRatings(): void {
       }
       picker.append(
         coverFrame,
-        game.title.trim()
-          ? createTitleText(game)
-          : el('input', {
+        canMutate() && !game.title.trim()
+          ? el('input', {
               className: 'ratings__title-input',
               attrs: {
                 type: 'text',
@@ -1207,7 +1235,8 @@ export function initRatings(): void {
                 'aria-autocomplete': 'list',
                 autocomplete: 'off',
               },
-            }),
+            })
+          : createTitleText(game),
       );
       titleCell.append(picker);
       row.append(titleCell);
@@ -1309,7 +1338,7 @@ export function initRatings(): void {
     title: string,
     bannerUrl?: string,
   ): Promise<void> {
-    if (!session) {
+    if (!session || !canMutate()) {
       return;
     }
 
@@ -1355,7 +1384,7 @@ export function initRatings(): void {
     raterId: string,
     score: number | null,
   ): Promise<void> {
-    if (!session || session.id !== raterId) {
+    if (!session || session.id !== raterId || !canMutate()) {
       return;
     }
 
@@ -1388,7 +1417,7 @@ export function initRatings(): void {
   }
 
   async function addGame(): Promise<void> {
-    if (!session) {
+    if (!session || !canMutate()) {
       return;
     }
 
@@ -1595,7 +1624,7 @@ export function initRatings(): void {
         applySession(next);
         render();
         await maybeImportLegacyBoard();
-        setStatus(`Column unlocked: ${next.name}.`);
+        setStatus(sessionStatus(next));
       } catch {
         setPinError(
           isSupabaseConfigured()
@@ -1818,7 +1847,7 @@ export function initRatings(): void {
           applySession(restored);
           render();
           await maybeImportLegacyBoard();
-          setStatus(`Column unlocked: ${restored.name}.`);
+          setStatus(sessionStatus(restored));
           return;
         }
 

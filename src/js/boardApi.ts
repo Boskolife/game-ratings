@@ -22,6 +22,7 @@ export interface PlayerSession {
   id: string;
   name: string;
   isAdmin: boolean;
+  isGuest: boolean;
   sessionToken: string;
 }
 
@@ -29,6 +30,7 @@ interface UnlockPayload {
   id: string;
   name: string;
   is_admin: boolean;
+  is_guest?: boolean;
   session_token: string;
 }
 
@@ -71,6 +73,7 @@ function mapSession(data: unknown): PlayerSession | null {
     id: row.id,
     name: row.name,
     isAdmin: Boolean(row.is_admin),
+    isGuest: Boolean(row.is_guest),
     sessionToken: row.session_token,
   };
 }
@@ -98,11 +101,19 @@ export async function loadBoard(): Promise<Board> {
     throw ratingsRes.error;
   }
 
-  const raters: Rater[] = (playersRes.data ?? []).map((row) => ({
-    id: row.id,
-    name: row.name,
-    isAdmin: Boolean(row.is_admin),
-  }));
+  const raters: Rater[] = (playersRes.data ?? []).flatMap((row) => {
+    if (row.id === 'guest') {
+      return [];
+    }
+
+    return [
+      {
+        id: row.id,
+        name: row.name,
+        isAdmin: Boolean(row.is_admin),
+      },
+    ];
+  });
 
   const ratingsByGame: Record<string, Record<string, number>> = {};
   (ratingsRes.data ?? []).forEach((row) => {

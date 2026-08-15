@@ -178,6 +178,10 @@
   margin-bottom: 0.85rem;
 }
 
+.ratings__board.is-guest [data-action="add-game"] {
+  display: none;
+}
+
 .ratings__list-search {
   flex: 1 1 12rem;
   min-width: 10rem;

@@ -5,7 +5,8 @@ A shared game scoreboard: rows are games, columns are players. Data lives in Sup
 ## Features
 
 - Sign in with a 4-digit PIN: only your column unlocks
-- Anyone signed in can add games; scores go only in your own column
+- Guest PIN `0000`: view the table only — no adding games and no scores
+- Anyone else signed in can add games; scores go only in your own column
 - Steam search (from 2 characters): title and banner are filled from the suggestion
 - After save, the title becomes read-only text; duplicates are blocked
 - List filter and alphabetical sort (empty titles stay at the top)
@@ -58,6 +59,8 @@ Vite uses sources from `src/` and environment variables from the repo root.
 
 ## How to use
 
+**Guest PIN: `0000`** — opens the table in view-only mode.
+
 1. Open the table and enter your PIN — your column unlocks.
 2. **Add game** creates an empty row. Start typing a title and pick a Steam result.
 3. Enter a score in your column. Other players’ cells stay locked.
@@ -71,7 +74,7 @@ The client reads tables directly and writes through `SECURITY DEFINER` RPCs (a v
 
 | Table | Purpose |
 | --- | --- |
-| `players` | Players, PIN hash, admin flag, column order |
+| `players` | Players, PIN hash, admin/guest flags, column order |
 | `games` | Title and banner. Unique on `lower(trim(title))` |
 | `ratings` | Score `0…10` per game + player |
 | `player_sessions` | Session token, 30-day lifetime |
