@@ -862,7 +862,24 @@ export function initRatings(): void {
     const rect = input.getBoundingClientRect();
     suggestRoot.style.top = `${rect.bottom + 4}px`;
     suggestRoot.style.left = `${rect.left}px`;
-    suggestRoot.style.width = `${Math.max(rect.width + 88, 280)}px`;
+    suggestRoot.style.width = `${Math.max(rect.width, 280)}px`;
+  }
+
+  function syncSuggestPosition(): void {
+    if (suggestRoot.hidden) {
+      return;
+    }
+
+    const active = document.activeElement;
+    if (
+      !(active instanceof HTMLInputElement) ||
+      active.dataset.field !== 'title'
+    ) {
+      hideSuggest();
+      return;
+    }
+
+    positionSuggest(active);
   }
 
   function highlightSuggest(): void {
@@ -1747,20 +1764,12 @@ export function initRatings(): void {
   render();
   window.addEventListener('resize', () => {
     syncTableScroll();
-    const active = document.activeElement;
-    if (
-      active instanceof HTMLInputElement &&
-      active.dataset.field === 'title' &&
-      !suggestRoot.hidden
-    ) {
-      positionSuggest(active);
-      return;
-    }
-    hideSuggest();
+    syncSuggestPosition();
   });
+  window.addEventListener('scroll', syncSuggestPosition, true);
 
   if (tableScroll instanceof HTMLElement) {
-    tableScroll.addEventListener('scroll', hideSuggest);
+    tableScroll.addEventListener('scroll', syncSuggestPosition);
     const resizeObserver = new ResizeObserver(() => {
       syncTableScroll();
     });
